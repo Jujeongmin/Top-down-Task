@@ -5,12 +5,11 @@ using UnityEngine.UI;
 public class MonsterSlot : MonoBehaviour
 {
     [SerializeField] private Image iconImage;
-    private Action onClick;
+    public event Action OnClick;
 
-    public void SetData(MonsterInfo info, Action onClickCallback)
+    public void SetData(MonsterInfo info)
     {
         iconImage.sprite = info.Icon;
-        onClick = onClickCallback;
-        GetComponent<Button>().onClick.AddListener(() => onClick?.Invoke());
+        GetComponent<Button>().onClick.AddListener(() => OnClick?.Invoke());
     }
 }

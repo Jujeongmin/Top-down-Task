@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerHp : MonoBehaviour
+public class PlayerHp : MonoBehaviour, IAttackable
 {
     public int maxHP = 10000;
     private int currentHP;

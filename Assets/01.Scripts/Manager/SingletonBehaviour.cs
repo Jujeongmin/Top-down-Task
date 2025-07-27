@@ -8,7 +8,15 @@ public class SingletonBehaviour<T> : MonoBehaviour where T : MonoBehaviour
         get
         {
             if (_instance == null)
-                CreateInstance();
+            {
+                _instance = FindObjectOfType<T>();
+
+                if (_instance == null)
+                {
+                    var obj = new GameObject(typeof(T).Name + "_Singleton");
+                    _instance = obj.AddComponent<T>();
+                }
+            }
 
             return _instance;
         }
@@ -16,44 +24,15 @@ public class SingletonBehaviour<T> : MonoBehaviour where T : MonoBehaviour
 
     protected virtual void Awake()
     {
-        CreateInstance();
-
         if (_instance == null)
         {
             _instance = this as T;
+            DontDestroyOnLoad(gameObject);
         }
         else if (_instance != this)
         {
-            Debug.LogWarning($"[Singleton] Duplicate instance of {typeof(T).Name} found. Destroying duplicate.");
+            Debug.LogWarning($"{typeof(T).Name} 인스턴스가 이미 있음");
             Destroy(gameObject);
-        }
-    }
-
-    private static void CreateInstance()
-    {
-        if (_instance == null)
-        {
-            T[] instances = FindObjectsOfType<T>();
-
-            if (instances.Length > 0)
-            {
-                _instance = instances[0];
-
-
-                for (int i = 1; i < instances.Length; i++)
-                {
-                    if (Application.isPlaying)
-                        Destroy(instances[i].gameObject);
-                    else
-                        DestroyImmediate(instances[i].gameObject);
-                }
-
-            }
-            else
-            {
-                GameObject obj = new GameObject(string.Format(typeof(T).Name + "_auto"));
-                _instance = obj.AddComponent<T>();
-            }
         }
     }
 }

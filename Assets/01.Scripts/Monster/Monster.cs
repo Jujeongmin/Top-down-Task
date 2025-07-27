@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Monster : MonoBehaviour
+public class Monster : MonoBehaviour, IAttackable
 {
     public MonsterInfo Data { get; private set; }
     public string MonsterID { get; private set; }
@@ -40,7 +40,7 @@ public class Monster : MonoBehaviour
         ChangeState(new ChaseState());
     }
 
-    void Update()
+    private void Update()
     {
         searchTimer += Time.deltaTime;
         if (searchTimer >= searchInterval)
@@ -50,6 +50,20 @@ public class Monster : MonoBehaviour
         }
 
         currentState?.Update();
+    }
+
+    private void LateUpdate()
+    {
+        if (target != null)
+        {
+            Vector3 dir = (target.position - transform.position).normalized;
+            transform.localScale = new Vector3(dir.x >= 0 ? 1 : -1, 1, 1);
+        }
+
+        Vector3 hpBarScale = hpBar.transform.localScale;
+        float parentX = transform.localScale.x;
+        hpBarScale.x = 0.01f * Mathf.Sign(parentX);
+        hpBar.transform.localScale = hpBarScale;
     }
 
     private void FindTargetByLayer()
@@ -77,10 +91,25 @@ public class Monster : MonoBehaviour
 
     public void ChangeState(IMonsterState newState)
     {
-        if (currentState == newState) return;
+        //if (currentState == newState) return;
         currentState?.Exit();
         currentState = newState;
         currentState.Enter(this);
+    }
+
+    public void UpdateState()
+    {
+        currentState?.Update();
+    }
+
+    public bool ShouldDie()
+    {
+        if (IsDead())
+        {
+            ChangeState(new DeadState());
+            return true;
+        }
+        return false;
     }
 
     public void MoveTowardsTarget()
@@ -88,8 +117,8 @@ public class Monster : MonoBehaviour
         if (target == null) return;
 
         Vector3 dir = (target.position - transform.position).normalized;
-        transform.position += dir * Data.MoveSpeed * Time.deltaTime;
-        transform.localScale = new Vector3(dir.x >= 0 ? 1 : -1, 1, 1);
+        transform.position += dir * Data.MoveSpeed * Time.deltaTime;        
+
         animator.SetIsRun(true);
     }
 
@@ -123,11 +152,10 @@ public class Monster : MonoBehaviour
     public void Attack()
     {
         int finalAttack = Mathf.RoundToInt(Data.Attack * (1f + Data.AttackMul));
-
-        PlayerHp playerHp = target.GetComponent<PlayerHp>();
-        if (playerHp != null)
+                
+        if (target != null && target.TryGetComponent(out IAttackable attackable))
         {
-            playerHp.TakeDamage(finalAttack);
+            attackable.TakeDamage(finalAttack);
         }
     }
 

@@ -1,23 +1,31 @@
 using UnityEngine;
 
 public class MeleeWeapon : WeaponBase
-{
-    public Transform playerPos;
-    public float rotationRadius = 1.5f;
-    public float rotationSpeed = 180f;
-    
-    public int damage = 10;
-    public LayerMask enemyLayer;
+{    
+    [SerializeField] private float rotationRadius = 1.5f;
+    [SerializeField] private float rotationSpeed = 180f;
+    [SerializeField] private int damage = 10;
+    [SerializeField] private LayerMask enemyLayer;
+
+    protected override void Start()
+    {
+        base.Start();
+        if (_playerTransform == null && transform.parent != null)
+        {
+            SetPlayer(transform.parent);
+        }
+    }
 
     protected override void HandleWeapon()
     {        
-        if (playerPos == null) return;
+        if (_playerTransform == null) return;
 
         float angle = rotationSpeed * Time.deltaTime;
-        Vector3 dir = (transform.position - playerPos.position).normalized;
+        Vector3 dir = (transform.position - _playerTransform.position).normalized;
         dir = Quaternion.Euler(0, 0, angle) * dir;
-        transform.position = playerPos.position + dir * rotationRadius;
-        transform.right = dir;        
+
+        transform.position = _playerTransform.position + dir * rotationRadius;
+        transform.right = dir;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -25,10 +33,9 @@ public class MeleeWeapon : WeaponBase
         if ((enemyLayer.value & (1 << collision.gameObject.layer)) == 0)
             return;
 
-        var monster = collision.GetComponent<Monster>();
-        if (monster != null)
+        if (collision.TryGetComponent(out IAttackable target))
         {
-            monster.TakeDamage(damage);
+            target.TakeDamage(damage);
         }
     }
 }

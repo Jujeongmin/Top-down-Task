@@ -11,7 +11,7 @@ public class UseItem : MonoBehaviour, IUsableItem
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if ((playerLayer.value & (1 << other.gameObject.layer)) != 0)
+        if ((playerLayer & (1 << other.gameObject.layer)) != 0)
         {
             Use(other.gameObject);
         }

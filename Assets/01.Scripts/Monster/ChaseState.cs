@@ -16,11 +16,7 @@ public class ChaseState : IMonsterState
 
     public void Update()
     {
-        if (monster.IsDead())
-        {
-            monster.ChangeState(new DeadState());
-            return;
-        }
+        if (monster.ShouldDie()) return;
 
         if (monster.IsInAttackRange())
         {

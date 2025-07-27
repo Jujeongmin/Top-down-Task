@@ -3,7 +3,7 @@ using UnityEngine;
 public class AttackState : IMonsterState
 {
     private Monster monster;
-    private float lastAttackTime = 0f;
+    private float lastAttackTime;
 
     public void Enter(Monster monster)
     {
@@ -13,11 +13,7 @@ public class AttackState : IMonsterState
 
     public void Update()
     {
-        if (monster.IsDead())
-        {
-            monster.ChangeState(new DeadState());
-            return;
-        }
+        if (monster.ShouldDie()) return;
 
         if (!monster.IsInAttackRange())
         {

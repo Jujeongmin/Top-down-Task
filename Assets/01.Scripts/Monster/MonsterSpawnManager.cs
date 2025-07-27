@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class MonsterSpawnManager : SingletonBehaviour<MonsterSpawnManager>
@@ -27,7 +26,8 @@ public class MonsterSpawnManager : SingletonBehaviour<MonsterSpawnManager>
 
         for (int i = 0; i < spawnPoints.Length; i++)
         {
-            SpawnRandomMonster(i);
+            //SpawnRandomMonster(i);
+            SpawnMonster("M0001", i);
         }
     }
 
@@ -86,6 +86,7 @@ public class MonsterSpawnManager : SingletonBehaviour<MonsterSpawnManager>
     private IEnumerator RespawnAfterDelay(float delay, int spawnIndex)
     {
         yield return new WaitForSeconds(delay);
-        SpawnRandomMonster(spawnIndex);
+        //SpawnRandomMonster(spawnIndex);
+        SpawnMonster("M0001", spawnIndex);
     }
 }

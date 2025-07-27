@@ -2,10 +2,24 @@ using UnityEngine;
 
 public abstract class WeaponBase : MonoBehaviour
 {
+    protected Transform _playerTransform;
+
+    public void SetPlayer(Transform player)
+    {
+        _playerTransform = player;
+    }
+
+    protected virtual void Start() { }
+
     protected virtual void Update()
     {
         HandleWeapon();
     }
 
-    protected abstract void HandleWeapon(); // 무기 타입별 동작 (회전, 발사 등)
+    protected abstract void HandleWeapon();
+}
+
+public interface IAttackable
+{
+    void TakeDamage(int damage);
 }

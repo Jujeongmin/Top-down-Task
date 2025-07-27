@@ -7,17 +7,12 @@ public class MonsterCodexUI : UIScreen
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private MonsterInfoPanel infoPanel;
 
-    private List<MonsterSlot> slotList = new();
-
-    public override void Awake()
-    {
-        base.Awake();
-        Refresh();
-    }
+    private readonly List<MonsterSlot> slotList = new();
 
     public override void OnShow()
     {
         base.OnShow();
+        Refresh();
     }
 
     private void Refresh()
@@ -31,10 +26,8 @@ public class MonsterCodexUI : UIScreen
         {
             GameObject go = Instantiate(slotPrefab, slotParent);
             var slot = go.GetComponent<MonsterSlot>();
-            slot.SetData(monster, () =>
-            {
-                infoPanel.ShowInfo(monster);
-            });
+            slot.SetData(monster);
+            slot.OnClick += () => infoPanel.ShowInfo(monster);
             slotList.Add(slot);
         }
     }
